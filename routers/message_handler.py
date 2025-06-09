@@ -277,7 +277,7 @@ async def rekvizit_reaction(message: Message):
     user_id = message.from_user.id
     language_result = await db.get_user_language(user_id)
     user_language = language_result[0] if language_result else 'uz'
-    await message.answer(await rekvizit_text(user_language), parse_mode="markdown", reply_markup=ReplyKeyboardRemove())
+    await message.answer(await rekvizit_text(user_language), parse_mode="markdown")
 
 
 @message_router.message(lambda message: message.text == 'Karta')
