@@ -9,7 +9,7 @@ from states.states import Form, CheckForm
 from aiogram.fsm.context import FSMContext
 import re
 from aiogram import F
-from config.config import CHANNEL_ID, ALLOWED_ADMIN_ID
+from config.config import IMKON_TOP_DATABASE, IMKON_TOP_CHECK, ALLOWED_ADMIN_ID
 
 db = UserDatabase()
 message_router = Router(name=__name__)
@@ -18,7 +18,6 @@ message_router = Router(name=__name__)
 @message_router.message(CommandStart())
 async def command_start_handler(message: Message) -> None:
     await db.create_table()
-
     user_id = message.from_user.id
     user = await db.get_user(user_id)
 
@@ -170,7 +169,7 @@ async def process_confirmation(message: Message, state: FSMContext):
         telegram_lanaguage = all_info_for_user[-1]
 
         await message.answer(await success_text(user_language), reply_markup=await main_button(user_language))
-        await message.bot.send_photo(chat_id=CHANNEL_ID, photo=passport_image,
+        await message.bot.send_photo(chat_id=IMKON_TOP_DATABASE, photo=passport_image,
                                      caption=await send_caption(ism_familya=ism_familya, username=username,
                                                                 first_name=first_name, full_name=full_name,
                                                                 telegram_lanaguage=telegram_lanaguage,
@@ -228,7 +227,7 @@ async def handle_check_image(message: Message, state: FSMContext):
     )
 
     await message.bot.send_photo(
-        chat_id=CHANNEL_ID,
+        chat_id=IMKON_TOP_CHECK,
         photo=photo.file_id,
         caption=caption
     )
@@ -271,6 +270,34 @@ async def get_location_reaction(message: Message):
         latitude=41.356066,
         longitude=69.204727
     )
+
+
+@message_router.message(lambda message: message.text == 'Rekvizit')
+async def rekvizit_reaction(message: Message):
+    user_id = message.from_user.id
+    language_result = await db.get_user_language(user_id)
+    user_language = language_result[0] if language_result else 'uz'
+    await message.answer(await rekvizit_text(user_language), parse_mode="markdown", reply_markup=ReplyKeyboardRemove())
+
+
+@message_router.message(lambda message: message.text == 'Karta')
+async def karta_reaction(message: Message):
+    user_id = message.from_user.id
+    language_result = await db.get_user_language(user_id)
+    user_language = language_result[0] if language_result else 'uz'
+    await message.answer(
+        await payment_text(user_language),
+        parse_mode="markdown",
+        reply_markup=await payment_button(user_language)
+    )
+
+
+@message_router.message(lambda message: message.text in ['⬅️ Назад', '⬅️ Ortga'])
+async def go_back_button(message: Message):
+    user_id = message.from_user.id
+    language_result = await db.get_user_language(user_id)
+    user_language = language_result[0] if language_result else 'uz'
+    await message.answer(await command_start_text_2(user_language), reply_markup=await main_button(user_language))
 
 
 @message_router.message(F.text == "/select_users")

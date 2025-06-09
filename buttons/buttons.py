@@ -94,6 +94,7 @@ async def payment_button(language: str) -> InlineKeyboardMarkup:
     if language == "uz":
         payme_text = "💳 Payme"
         click_text = "💳 Click"
+        back_text = "⬅️ Ortga"
     else:
         payme_text = "💳 Payme"
         click_text = "💳 Click"
@@ -101,8 +102,8 @@ async def payment_button(language: str) -> InlineKeyboardMarkup:
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
         [
             InlineKeyboardButton(text=payme_text, url="https://payme.uz/"),
-            InlineKeyboardButton(text=click_text, url="https://click.uz/")
-        ]
+            InlineKeyboardButton(text=click_text, url="https://indoor.click.uz/pay?id=074594&t=0")
+        ],
     ])
     return keyboard
 
@@ -111,14 +112,17 @@ async def rekvizit_and_karta(language):
     if language == "uz":
         rekvizit_text = "Rekvizit"
         karta_text = "Karta"
+        back_text = "⬅️ Ortga"
     else:
         rekvizit_text = "Реквизит"
         karta_text = "Карта"
+        back_text = "⬅️ Назад"
 
-    keyboard = InlineKeyboardMarkup(inline_keyboard=[
-        [
-            InlineKeyboardButton(text=rekvizit_text, callback_data="rekvizit"),
-            InlineKeyboardButton(text=karta_text, callback_data='karta')
-        ]
-    ])
+    keyboard = ReplyKeyboardMarkup(
+        keyboard=[
+            [KeyboardButton(text=rekvizit_text), KeyboardButton(text=karta_text)],
+            [KeyboardButton(text=back_text)]
+        ],
+        resize_keyboard=True
+    )
     return keyboard
